@@ -50,11 +50,27 @@ internal static class TicketRules
     {
         // TODO：忽略大小写解析名称或数字，并验证已定义；失败时设为 Unknown，返回 false。
         // 当前命名空间末段叫 Enum，因此用 System.Enum 调用枚举工具方法。
+        if (System.Enum.TryParse<TicketStatus>(input, true, out var parsed) && System.Enum.IsDefined(typeof(TicketStatus), parsed))
+        {
+            status = parsed;
+            return true;
+        }
+        else
+        {
+            status = TicketStatus.Unknown;
+            return false;
+        }
         throw new NotImplementedException();
     }
     public static bool CanTransition(TicketStatus from, TicketStatus to)
     {
         // TODO：只允许 Open → Processing、Processing → Closed；其他组合全部 false。
+        if (!System.Enum.IsDefined(typeof(TicketStatus), from) || !System.Enum.IsDefined(typeof(TicketStatus), to))
+        {
+            return false;
+        }
+        return (from == TicketStatus.Open && to == TicketStatus.Processing) || 
+            (from == TicketStatus.Processing && to == TicketStatus.Closed);
         throw new NotImplementedException();
     }
 }
